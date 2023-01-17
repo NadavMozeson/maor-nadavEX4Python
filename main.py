@@ -63,15 +63,14 @@ class Time:
     def __repr__(self):
         return f"{self.hour}-{self.minute}"
 
-    def __gt__(self, other):
+    def __ge__(self, other):
         if self.hour > other.hour:
             return True
-        elif self.hour < other.hour:
+        elif self.hour == other.hour:
+            if self.minute >= other.minute:
+                return True
             return False
-        elif self.minute > other.minute:
-            return True
-        elif self.minute <= other.minute:
-            return False
+        return False
 
 class CalendarEntry:
     def __init__(self):
@@ -83,11 +82,36 @@ class CalendarEntry:
         self.taskDic = dict()
 
     def addTask(self, name, t1, t2):
-        for x in self.taskDic.keys():
-            # TODO
-        self.taskDic[(str(t1), str(t2))] = name
+        if len(self.taskDic.keys()) == 0:
+            self.taskDic[(str(t1), str(t2))] = name
+        else:
+            for x in list(self.taskDic.keys()):
+                minTime = Time(int(str(x[0])[:2]), int(str(x[0])[3:]))
+                maxTime = Time(int(str(x[1])[:2]), int(str(x[1])[3:]))
+                if maxTime >= t1 >= minTime or maxTime >= t2 >= minTime:
+                    print("Event Already Exists on this Time Frame!")
+                    return
+                else:
+                    self.taskDic[(str(t1), str(t2))] = name
+
+    def tasks(self):
+        return self.taskDic
+
+    def __str__(self):
+        keys = list(self.taskDic.keys())
+        keys.sort(key=lambda x: float(str(x[0])[:2] + "." + str(x[0])[3:]))
+        count = 0
+        resultStr = f"Todo list for {self.date}"
+        for x in keys:
+            count += 1
+            resultStr += f"\n{count}. {x[0]}-{x[1]} - {self.taskDic[x]}"
+        return resultStr
 
 today = Date(2023, 1, 17)
-print(today)
-t = Time(10, 0)
-print(repr(t))
+t = Time(15, 0)
+todo = CalendarEntry(2023, 1, 17)
+todo.addTask("Test", Time(11, 59), Time(12, 0))
+todo.addTask("Test2", Time(11, 0), Time(11, 1))
+todo.addTask("Test3", Time(20, 0), Time(22, 0))
+print(todo.tasks())
+print(todo)
