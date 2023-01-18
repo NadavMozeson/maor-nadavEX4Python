@@ -145,7 +145,7 @@ def make_calentry_class():
         :param m: Minute to set for the time. (Integer)
         """
         d = make_date_class()
-        date = d["new"](y, m, d)
+        date = d["new"](2017, 1, 20)
         taskDic = dict()
 
         def get(st):
@@ -154,10 +154,12 @@ def make_calentry_class():
                 String convertor.
                 :return: A string format of all the fields.
                 """
+                nonlocal date
                 keys = list(taskDic.keys())
                 keys.sort(key=lambda x: float(str(x[0])[:2] + "." + str(x[0])[3:]))
                 count = 0
-                resultStr = f"Todo list for {date}"
+                dateStr = date['get']("__str__")()
+                resultStr = f"Todo list for {dateStr}"
                 for x in keys:
                     count += 1
                     resultStr += f"\n{count}. {x[0]}-{x[1]} - {taskDic[x]}"
